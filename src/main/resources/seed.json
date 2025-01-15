@@ -1,0 +1,8 @@
+[{
+  "name" :  "application1",
+  "description" :  "demo app 1",
+  "businessUnit" :  "business unit 1",
+  "organization" :  "some org",
+  "businessOwner" :  "owner 1",
+  "identifier" :  "someunique id"
+}]
