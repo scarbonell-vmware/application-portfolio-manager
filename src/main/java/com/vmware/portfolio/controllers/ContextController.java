@@ -1,6 +1,7 @@
 package com.vmware.portfolio.controllers;
 
-import com.vmware.portfolio.models.Application;
+import com.vmware.portfolio.models.TestConfig;
+import com.vmware.portfolio.services.TestConfigService;
 import com.vmware.portfolio.utils.LoadTester;
 import com.vmware.portfolio.utils.PropUtils;
 import org.codehaus.jettison.json.JSONException;
@@ -20,6 +21,9 @@ public class ContextController {
 
     @Autowired
     PropUtils propUtils;
+
+    @Autowired
+    TestConfigService testConfigService;
 
     @Value("${portfolio.application.manager.version}")
     private String version;
@@ -51,6 +55,11 @@ public class ContextController {
         return LoadTester.getInstance().getUsedMemory()+"M";
     }
 
+    @GetMapping(value = "memoryAllocated")
+    public String getMaxMemory () {
+        return LoadTester.getInstance().getAvailableMemory()+"M";
+    }
+
     @GetMapping(value = "cpuUsage")
     public String getCpu () {
         return LoadTester.getInstance().getCPUUsage()+"";
@@ -58,19 +67,19 @@ public class ContextController {
 
     @PostMapping(value = "increaseMemory")
     public ResponseEntity increaseMemory(@RequestBody String target) throws InterruptedException {
-        LoadTester.getInstance().launchMemoryTest(Long.parseLong(target));
+        testConfigService.startMemoryTest(Long.parseLong(target));
         return new ResponseEntity<String>("Started...",HttpStatus.OK);
     }
 
     @PostMapping("increaseCPU")
     public ResponseEntity increaseCPU() throws InterruptedException {
-        LoadTester.getInstance().launchCPUTest();
+        testConfigService.startCpuTest();
         return new ResponseEntity<String>("Started...",HttpStatus.OK);
     }
 
     @PostMapping("stopLoadTests")
     public String stopLoadTest() throws InterruptedException {
-        LoadTester.getInstance().stop();
+        testConfigService.stopAllTest();
         return "Stopped...";
     }
 }

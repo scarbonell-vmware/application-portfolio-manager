@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 const LoadTester = ({ }) => {
 
     const [memoryUsage, setMemoryUsage] = React.useState();
+    const [memoryAllocated, setMemoryAllocated] = React.useState();
     const [memoryTarget, setMemoryTarget] = React.useState();
     const [cpuUsage, setCpuUsage] = React.useState();
     const [cpuTestStatus, setCpuTestStatus] = React.useState();
@@ -27,6 +28,17 @@ const LoadTester = ({ }) => {
           })
           .then(function (data) {
             setMemoryUsage(data)
+          });
+      }
+
+      const fetchMemoryAllocated = async () => {
+        await fetch('/api/memoryAllocated', {
+            method: 'GET'
+          }).then(function (response) {
+            return response.text();
+          })
+          .then(function (data) {
+            setMemoryAllocated(data)
           });
       }
 
@@ -82,7 +94,7 @@ const LoadTester = ({ }) => {
    
        // First load we get the templates available
     useEffect(() => {
-
+        fetchMemoryAllocated()
         updateUsage()
         const intervalId = setInterval(updateUsage, 2000);
     
@@ -97,6 +109,7 @@ const LoadTester = ({ }) => {
 
       <div>
           <div className='usage'>
+          <div>Memory Allocated: <span style={{'fontWeight': 'bold'}}>{memoryAllocated}</span></div>
           <div>Memory Usage: <span style={{'fontWeight': 'bold'}}>{memoryUsage}</span></div>
           <div>CPU Usage: <span style={{'fontWeight': 'bold'}}>{cpuUsage}</span></div>
           </div>

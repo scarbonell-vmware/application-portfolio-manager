@@ -11,19 +11,36 @@ import java.util.List;
 @Setter
 public class LoadTester {
 
-    private boolean active = false;
+    private boolean memoryTestActive = false;
+    private String memoryTestId;
+
+    private boolean cpuTestActive = false;
+    private String cpuTestId;
+
     private List<Thread> threads = new ArrayList<>();
     private static final class InstanceHolder {
         private static final LoadTester INSTANCE = new LoadTester();
     }
 
-    public void stop () {
-        killAllThreads ();
-        setActive(false);
+    public void stopAll () {
+        stopCpuTest();
+        stopMemoryTest();
     }
 
-    public void start () {
-        setActive(true);
+    public void stopMemoryTest () {
+        setMemoryTestActive(false);
+    }
+
+    public void stopCpuTest () {
+        setCpuTestActive(false);
+        killAllThreads ();
+    }
+
+    public void startMemoryTest () {
+        setMemoryTestActive(true);
+    }
+    public void startCpuTest () {
+        setCpuTestActive(true);
     }
 
     public static LoadTester getInstance() {
@@ -31,11 +48,11 @@ public class LoadTester {
     }
 
     public void launchMemoryTest (long target) throws InterruptedException {
-        if (isActive()) {
-            LoadTester.getInstance().stop();
+        if (isMemoryTestActive()) {
+            LoadTester.getInstance().stopMemoryTest();
             Thread.sleep(2000);
         }
-        start();
+        startMemoryTest();
 
         Thread thread = new Thread(() -> {
             try {
@@ -48,11 +65,11 @@ public class LoadTester {
     }
 
     public void launchCPUTest () throws InterruptedException {
-        if (isActive()) {
-            LoadTester.getInstance().stop();
+        if (isCpuTestActive()) {
+            LoadTester.getInstance().stopCpuTest();
             Thread.sleep(2000);
         }
-        start();
+        startCpuTest();
 
         Thread thread = new Thread(() -> {
             increaseCPU();
@@ -62,7 +79,7 @@ public class LoadTester {
         public void increaseMemory(long target) throws InterruptedException {
             List<Object> memoryLeakList = new ArrayList<>();
 
-            while (true && active) {
+            while (true && memoryTestActive) {
 
                 if (getUsedMemory () < target) {
                     System.out.println(getUsedMemory()+"M / "+target+"M");
@@ -72,15 +89,14 @@ public class LoadTester {
                     // Add the object to the list to prevent garbage collection
                     memoryLeakList.add(data);
                 }
-                else {
-                    System.out.println("Target Memory Reached..."+getUsedMemory());
-                }
+
                 // Optional: Sleep to slow down memory consumption
-                Thread.sleep(500);
+                Thread.sleep(100);
 
             }
             System.out.println("Releasing memory...");
-            memoryLeakList = new ArrayList<>();
+            memoryLeakList = null;
+            System.gc();
         }
 
         public double getUsedMemory () {
@@ -96,6 +112,17 @@ public class LoadTester {
             long usedMemory = totalMemory - freeMemory;
 
             double megabytes = usedMemory / (1024.0 * 1024.0);
+
+            return Math.round(megabytes * 100.0) / 100.0;
+        }
+
+        public double getAvailableMemory () {
+            Runtime runtime = Runtime.getRuntime();
+
+            // Get total memory available to the JVM
+            long totalMemory = runtime.totalMemory();
+
+            double megabytes = totalMemory / (1024.0 * 1024.0);
 
             return Math.round(megabytes * 100.0) / 100.0;
         }
@@ -116,7 +143,7 @@ public class LoadTester {
                 System.out.println("# "+i+" started...");
 
                 Thread t = new Thread(() -> {
-                    while (true && active) {
+                    while (true && cpuTestActive) {
                         performHeavyTask();
                     }
                 });
@@ -138,7 +165,7 @@ public class LoadTester {
         long result = 0;
         for (long i = 0; i < 100000000L; i++) {
             result += i;
-            if (!isActive()) {
+            if (!isCpuTestActive()) {
                 System.out.println("Releasing Thread...");
                 break;
             }

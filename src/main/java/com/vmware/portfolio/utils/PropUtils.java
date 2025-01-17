@@ -53,7 +53,14 @@ public class PropUtils {
     }
 
     public Map<String, String> getEnvironmentProps () throws JSONException {
-        return System.getenv();
+        Map<String, String> props = new HashMap<>();
+        //String VCAP_APPLICATION = "{\"application_id\":\"b8f7966d-d0ca-4da8-9e0d-820416add970\",\"application_name\":\"application-portfolio-manager\",\"application_uris\":[\"application-portfolio-manager.apps.dhaka.cf-app.com\"],\"application_version\":\"d635317d-b7a9-45ed-b24e-394ecb6c0db4\",\"cf_api\":\"https://api.sys.dhaka.cf-app.com\",\"host\":\"0.0.0.0\",\"instance_id\":\"afbf513f-3350-4ed3-7222-ffa1\",\"instance_index\":0,\"limits\":{\"disk\":1024,\"fds\":16384,\"mem\":1024},\"name\":\"application-portfolio-manager\",\"organization_id\":\"1b42fa12-d3d5-4029-9f92-22aeb9b98177\",\"organization_name\":\"rpm-practice\",\"port\":8080,\"process_id\":\"b8f7966d-d0ca-4da8-9e0d-820416add970\",\"process_type\":\"web\",\"space_id\":\"70146843-6429-4651-b7db-a309185741ed\",\"space_name\":\"scarbonell-sandbox\",\"uris\":[\"application-portfolio-manager.apps.dhaka.cf-app.com\"],\"version\":\"d635317d-b7a9-45ed-b24e-394ecb6c0db4\"}";
+        //String VCAP_SERVICES = "{\"application_id\":\"b8f7966d-d0ca-4da8-9e0d-820416add970\",\"application_name\":\"application-portfolio-manager\",\"application_uris\":[\"application-portfolio-manager.apps.dhaka.cf-app.com\"],\"application_version\":\"d635317d-b7a9-45ed-b24e-394ecb6c0db4\",\"cf_api\":\"https://api.sys.dhaka.cf-app.com\",\"host\":\"0.0.0.0\",\"instance_id\":\"afbf513f-3350-4ed3-7222-ffa1\",\"instance_index\":0,\"limits\":{\"disk\":1024,\"fds\":16384,\"mem\":1024},\"name\":\"application-portfolio-manager\",\"organization_id\":\"1b42fa12-d3d5-4029-9f92-22aeb9b98177\",\"organization_name\":\"rpm-practice\",\"port\":8080,\"process_id\":\"b8f7966d-d0ca-4da8-9e0d-820416add970\",\"process_type\":\"web\",\"space_id\":\"70146843-6429-4651-b7db-a309185741ed\",\"space_name\":\"scarbonell-sandbox\",\"uris\":[\"application-portfolio-manager.apps.dhaka.cf-app.com\"],\"version\":\"d635317d-b7a9-45ed-b24e-394ecb6c0db4\"}";
+
+        props.putAll(System.getenv());
+        //props.put("VCAP_APPLICATION", VCAP_APPLICATION);
+        //props.put("VCAP_SERVICES", VCAP_SERVICES);
+        return props;
     }
 
     public Map<String, String> getAppProperties () throws JSONException {

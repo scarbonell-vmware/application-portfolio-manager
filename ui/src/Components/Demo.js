@@ -31,6 +31,10 @@ const Demo = () => {
             return response.json();
           })
           .then(function (data) {
+              console.log(data.VCAP_APPLICATION)
+            if (data.VCAP_APPLICATION) data.VCAP_APPLICATION = JSON.parse(data.VCAP_APPLICATION)
+            if (data.VCAP_SERVICES) data.VCAP_SERVICES = JSON.parse(data.VCAP_SERVICES)
+            console.log(data)
             setEnvProps(data)
           });
       }
@@ -63,7 +67,11 @@ const Demo = () => {
       {appProps && <PropTable props={appProps}></PropTable>}
       <div className="section-title">Environment Properties:</div>
       {envProps && <PropTable props={envProps}></PropTable>}
-
+      <div className="section-title">TAS Application Properties:</div>
+      {envProps && envProps.VCAP_APPLICATION && <PropTable props={envProps.VCAP_APPLICATION}></PropTable>}
+      
+      <div className="section-title">TAS Service Properties:</div>
+      {envProps && envProps.VCAP_SERVICES && <PropTable props={envProps.VCAP_SERVICES}></PropTable>}
 
       </>
 

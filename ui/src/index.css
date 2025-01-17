@@ -21,6 +21,18 @@ html, body, #root {
   font-weight: 400;
   line-height: 1.5em;
 }
+
+.header .instance-index {
+  color: white;
+  font-size: 17px;
+  margin-left: 10px;
+  float: right;
+  padding-top: 9px;
+  font-size: 1rem;
+  font-weight: bold;
+  line-height: 1.5em;
+  margin-right: 20px;
+}
 .header .logo {
   flex: 1;
   height: 35px;
