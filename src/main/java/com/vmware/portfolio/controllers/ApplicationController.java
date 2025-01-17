@@ -37,4 +37,11 @@ public class ApplicationController {
         appService.delete(applicationId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PutMapping
+    @ResponseBody
+    public ResponseEntity update(@RequestBody Application application) {
+        appService.update(application);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

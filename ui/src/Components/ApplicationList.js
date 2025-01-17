@@ -2,41 +2,24 @@ import React from 'react'
 import styled from 'styled-components'
 import { useTable, useFilters, useAsyncDebounce } from 'react-table'
 import { useState, useEffect } from 'react';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Grid from "@material-ui/core/Grid";
+import CloseIcon from "@material-ui/icons/Close";
+import IconButton from "@material-ui/core/IconButton";
+import Button from '@material-ui/core/Button';
+import Typography from "@material-ui/core/Typography";
+import ApplicationForm from './ApplicationForm';
+import Demo from './Demo';
+import Tabs from './Tabs';
+import LoadTester from './LoadTester';
+
 const Styles = styled.div`
   padding: 1rem;
   label {
       font-weight: bold;
       border-bottom: 1px solid black;
-  }
-  ul {
-      margin-left: 10px;
-  }
-  table {
-   
-    border-spacing: 0;
-    border: 1px solid black;
-
-    tr {
-      :last-child {
-        td {
-          border-bottom: 0;
-        }
-      }
-    }
-
-    th,
-    td {
-      margin: 0;
-      padding: 0.5rem;
-      font-size: 11px;
-      border-bottom: 1px solid black;
-      border-right: 1px solid black;
-      vertical-align: text-top;
-      :last-child {
-        border-right: 0;
-      }
-    }
-  }
+  }  
 `
 
 // Define a default UI for filtering
@@ -70,6 +53,12 @@ function GlobalFilter({
   )
 }
 
+function EmptyFilter({
+  column: { filterValue = [], preFilteredRows, setFilter, id },
+}) {
+  return (<div></div>)
+}
+
 // Define a default UI for filtering
 function DefaultColumnFilter({
   column: { filterValue, preFilteredRows, setFilter }
@@ -82,7 +71,7 @@ function DefaultColumnFilter({
       onChange={e => {
         setFilter(e.target.value || undefined) // Set undefined to remove the filter entirely
       }}
-      placeholder={`Search ${count} records...`}
+      placeholder={``}
     />
   )
 }
@@ -141,7 +130,7 @@ function Table({ columns, data }) {
 
   return (
     <>
-      <table className='filtered-table' {...getTableProps()}>
+      <table className='styled-table' {...getTableProps()}>
         <thead>
           {headerGroups.map(headerGroup => (
             <tr {...headerGroup.getHeaderGroupProps()}>
@@ -176,8 +165,65 @@ function Table({ columns, data }) {
 function ApplicationList() {
 
   const [applications, setApplications] = React.useState([]);
+  const [currentApplication, setCurrentApplication] = React.useState();
+  const [displayCreateDialog, setDisplayCreateDialog] = React.useState(false);
+  const [displayEditDialog, setDisplayEditDialog] = React.useState(false);
 
-  //applications.push({"name" : "Some App"})
+  function openCreateDialog () {
+    setDisplayCreateDialog(true)
+  }
+
+  function closeCreateDialog () {
+    setDisplayCreateDialog(false)
+  }
+
+  function openEditDialog (application) {
+    setCurrentApplication(application)
+    setDisplayEditDialog(true)
+  }
+
+  function closeEditDialog () {
+    setDisplayEditDialog(false)
+  }
+
+  const deleteApp = async (id) => {
+    await fetch(`/api/v1/application/${id}`, {
+      method: 'DELETE'
+    })
+    .then(function (data) {
+      fetchApplications()
+    });
+  }
+
+  const createApp = async (application) => {
+    await fetch('/api/v1/application', {
+      method: 'POST',
+      body: JSON.stringify(application),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(function (data) {
+      fetchApplications()
+      closeCreateDialog()
+    });
+  }
+
+  const updateApp = async (application) => {
+    await fetch('/api/v1/application', {
+      method: 'PUT',
+      body: JSON.stringify(application),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(function (data) {
+      fetchApplications()
+      closeEditDialog()
+    });
+  }
 
   const defaultColumns = [{
     Header: 'Applications',
@@ -205,9 +251,24 @@ function ApplicationList() {
       {
         Header: 'Business Owner',
         accessor: "businessOwner"
+      },
+      {
+        Header: 'Actions',
+        accessor: r => r,
+        Cell: displayActions,
+        Filter: EmptyFilter
       }
     ],
   }]
+
+  function displayActions({ value }) {
+    return <div className='action-items'>
+      <div onClick={() => openEditDialog(value)} title="Edit" className='edit-on'></div>
+      <div onClick={() => deleteApp(value.id)} title="Delete" className='delete-on'></div>
+      
+      </div>
+      
+  }
 
   const columns = React.useMemo(
     () => defaultColumns,
@@ -239,9 +300,48 @@ const fetchApplications = async () => {
 
   return (
     <Styles>
-    <div className="main-table">
-        <Table columns={columns} data={data} />
-    </div>
+      <Tabs>
+        <div title='Manage Applications' >
+            <div className="main-table">
+                <Button style={{'fontSize': '13px'}} onClick={() => openCreateDialog()} variant="outlined">Create Application</Button>
+                <Table columns={columns} data={data} />
+            </div>
+       </div>
+
+       <div title='Manage Organizations' ></div>
+       <div title='Manage Users' ></div>
+       <div title='Settings' ></div>
+       <div title='Properties' >
+         <Demo></Demo>
+       </div>
+       <div title='Load Testing' >
+         <LoadTester></LoadTester>
+       </div>
+    </Tabs>
+    {displayCreateDialog && <Dialog open={true} onClose={closeCreateDialog}>
+        <DialogTitle>
+          <Grid container justify="space-between" alignItems="center">
+          <Typography variant="div">Create new Application</Typography>
+            <IconButton onClick={() => closeCreateDialog()}>
+              <CloseIcon />
+            </IconButton>
+          </Grid></DialogTitle>
+
+          <ApplicationForm onClose={closeCreateDialog} onSubmit={createApp} title={'Create Application'}></ApplicationForm>
+     
+      </Dialog>}
+      {displayEditDialog && <Dialog open={true} onClose={closeEditDialog}>
+        <DialogTitle>
+          <Grid container justify="space-between" alignItems="center">
+          <Typography variant="div">Update Application {currentApplication.name}</Typography>
+            <IconButton onClick={() => closeCreateDialog()}>
+              <CloseIcon />
+            </IconButton>
+          </Grid></DialogTitle>
+
+          <ApplicationForm onClose={closeEditDialog} application={currentApplication} onSubmit={updateApp} title={'Udpate Application'+currentApplication.name}></ApplicationForm>
+     
+      </Dialog>}
     </Styles>
   )
 }

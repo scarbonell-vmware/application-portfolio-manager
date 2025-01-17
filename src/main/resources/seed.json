@@ -1,8 +1,16 @@
 [{
-  "name" :  "application1",
-  "description" :  "demo app 1",
-  "businessUnit" :  "business unit 1",
-  "organization" :  "some org",
-  "businessOwner" :  "owner 1",
-  "identifier" :  "someunique id"
-}]
+  "name" :  "Mortgage 2.0",
+  "description" :  "Handle Mortgage Application",
+  "businessUnit" :  "CBH",
+  "organization" :  "Finance",
+  "businessOwner" :  "John Smith",
+  "identifier" :  "MO_2.0"
+},
+  {
+    "name" :  "Customer Manager",
+    "description" :  "Manage Customers",
+    "businessUnit" :  "SRC",
+    "organization" :  "Finance",
+    "businessOwner" :  "Josh Kolt",
+    "identifier" :  "SH_2.1"
+  }]

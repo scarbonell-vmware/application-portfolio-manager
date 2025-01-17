@@ -1,6 +1,7 @@
 
 import React from 'react';
 import Header from './Components/Header';
+import Navigation from './Components/Navigation';
 import { useEffect } from 'react';
 import MainPage from "./MainPage";
 import { useState } from 'react';
@@ -36,6 +37,7 @@ const App: React.FC<{ }> = () => {
     <React.Fragment>
     {version && <Header version = {version} navigationCallBack={updateNavigationState}></Header>}
     <div className='layout'>
+      <Navigation />
       <MainPage navigationState={navigationState} updateNavigationState={updateNavigationState}/>
     </div>
     </React.Fragment>

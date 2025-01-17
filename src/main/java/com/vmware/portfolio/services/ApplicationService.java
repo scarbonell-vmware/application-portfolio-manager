@@ -27,4 +27,17 @@ public class ApplicationService {
         Application application = appRepository.getById(Long.parseLong(id));
         appRepository.delete(application);
     }
+
+    public void update (Application application) {
+        Application existingApplication = appRepository.getById(application.getId());
+        if (existingApplication != null) {
+            existingApplication.setOrganization(application.getOrganization());
+            existingApplication.setBusinessOwner(application.getBusinessOwner());
+            existingApplication.setBusinessUnit(application.getBusinessUnit());
+            existingApplication.setName(application.getName());
+            existingApplication.setIdentifier(application.getIdentifier());
+            existingApplication.setDescription(application.getDescription());
+            save(existingApplication);
+        }
+    }
 }
