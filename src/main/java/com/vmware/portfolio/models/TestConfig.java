@@ -29,7 +29,7 @@ public class TestConfig {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "value")
+    @Column(name = "conf_value")
     private String value;
 
     public TestConfig() {
