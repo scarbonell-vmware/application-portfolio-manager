@@ -40,7 +40,7 @@ const Header = ( {navigationCallBack, version} ) => {
         <header className='header'>
             <div className="flex-container">
                 <div className='logo'></div>
-                <div className='title'>Application Portfolio Manager <span id="version">{version.name}</span></div>
+                <div className='title'>Application Portfolio Manager <span id="version">{version.name} .NET CORE</span></div>
                 <div className='instance-index'>{'TAS Instance: '+instanceIndex}</div>
                 <div className='about-bt' onClick={onAboutDialogOpen}></div>
             </div>
